@@ -18,6 +18,8 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
+find_package(OpenCV 3 REQUIRED)
+
 find_package(OpenGL REQUIRED)
 set(QT_USE_QTOPENGL TRUE)
 set(QT_USE_QTXML TRUE)
@@ -64,10 +66,11 @@ include_directories(
 
 rosbuild_add_executable(viewer src/main_viewer.cpp ${SOURCE_FILES} ${HEADER_FILES})
 
-target_link_libraries(viewer ${QGLViewer_LIBRARIES} ${QT_LIBRARIES} ${QGLVIEWER_LIBRARY} GL glut GLU)
+target_link_libraries(viewer ${QGLViewer_LIBRARIES} ${QT_LIBRARIES} ${QGLVIEWER_LIBRARY} GL glut GLU boost_system boost_system ${OpenCV_LIBS})
 
 rosbuild_link_boost(viewer thread)
 
 
 rosbuild_add_executable(videoStitch src/main_stitchVideos.cpp)
+target_link_libraries(videoStitch ${OpenCV_LIBS})
 

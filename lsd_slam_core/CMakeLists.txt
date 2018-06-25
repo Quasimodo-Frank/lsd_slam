@@ -16,6 +16,8 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 set(CMAKE_MODULE_PATH   ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
+find_package(OpenCV 3 REQUIRED)
+
 find_package(Eigen3 REQUIRED)
 find_package(SuiteParse REQUIRED) # Apparently needed by g2o
 find_package(X11 REQUIRED)
@@ -39,7 +41,7 @@ add_definitions("-DENABLE_SSE")
 
 # Also add some useful compiler flag
 set(CMAKE_CXX_FLAGS
-   "${CMAKE_CXX_FLAGS} ${SSE_FLAGS} -march=native  -std=c++0x"
+   "${CMAKE_CXX_FLAGS} ${SSE_FLAGS} -march=native  -std=c++0x" 
 ) 
 
 # Set source files
@@ -83,16 +85,16 @@ include_directories(
 
 # build shared library.
 rosbuild_add_library(lsdslam SHARED ${SOURCE_FILES})
-target_link_libraries(lsdslam ${FABMAP_LIB} g2o_core g2o_stuff csparse cxsparse g2o_solver_csparse g2o_csparse_extension g2o_types_sim3 g2o_types_sba X11)
+target_link_libraries(lsdslam ${FABMAP_LIB} g2o_core g2o_stuff csparse cxsparse g2o_solver_csparse g2o_csparse_extension g2o_types_sim3 g2o_types_sba X11 ${OpenCV_LIBS} boost_system)
 rosbuild_link_boost(lsdslam thread)
 
 
 # build live ros node
 rosbuild_add_executable(live_slam src/main_live_odometry.cpp)
-target_link_libraries(live_slam lsdslam)
+target_link_libraries(live_slam lsdslam ${OpenCV_LIBS} boost_system)
 
 
 # build image node
 rosbuild_add_executable(dataset_slam src/main_on_images.cpp)
-target_link_libraries(dataset_slam lsdslam)
+target_link_libraries(dataset_slam lsdslam ${OpenCV_LIBS} boost_system)
 
