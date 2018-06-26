@@ -16,11 +16,18 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 set(CMAKE_MODULE_PATH   ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
-find_package(OpenCV 3 REQUIRED)
-
+#find_package(OpenCV 3 REQUIRED)
+set(OpenCV_INCLUDE_DIRS 
+	"/home/fcheng/opencv_install/include" 
+	"/home/fcheng/opencv_install/include/opencv2")
+set(OpenCV_LIB_DIR "/home/fcheng/opencv_install/lib")
+set(OpenCV_LIBS opencv_core opencv_highgui opencv_imgproc opencv_imgcodecs opencv_calib3d)
+set(OpenCV_DIR "/home/fcheng/opencv_install/build")
 find_package(Eigen3 REQUIRED)
 find_package(SuiteParse REQUIRED) # Apparently needed by g2o
 find_package(X11 REQUIRED)
+
+link_directories(${OpenCV_LIB_DIR} boost_system)
 
 # FabMap
 # uncomment this part to enable fabmap
@@ -79,7 +86,8 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/src
   ${PROJECT_SOURCE_DIR}/thirdparty/Sophus
   ${CSPARSE_INCLUDE_DIR} #Has been set by SuiteParse
-  ${CHOLMOD_INCLUDE_DIR} #Has been set by SuiteParse
+  ${CHOLMOD_INCLUDE_DIR} #Has been set by SuiteParse 
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 
@@ -91,10 +99,10 @@ rosbuild_link_boost(lsdslam thread)
 
 # build live ros node
 rosbuild_add_executable(live_slam src/main_live_odometry.cpp)
-target_link_libraries(live_slam lsdslam ${OpenCV_LIBS} boost_system)
+target_link_libraries(live_slam lsdslam ${OpenCV_LIBS})
 
 
 # build image node
 rosbuild_add_executable(dataset_slam src/main_on_images.cpp)
-target_link_libraries(dataset_slam lsdslam ${OpenCV_LIBS} boost_system)
+target_link_libraries(dataset_slam lsdslam ${OpenCV_LIBS})
 
